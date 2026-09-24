@@ -28,7 +28,7 @@ public class InterfazScanner extends JFrame {
 
     public InterfazScanner() {
         setTitle("Escáner de Red");
-        setSize(800, 600);
+        setSize(850, 580);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout(10, 10));
@@ -37,8 +37,10 @@ public class InterfazScanner extends JFrame {
     }
 
     private void inicializarComponentes() {
-        JPanel panelConfig = new JPanel(new GridLayout(4, 2, 5, 5));
-        panelConfig.setBorder(BorderFactory.createTitledBorder("Configuración de Escaneo"));
+        JPanel panelIzquierdo = new JPanel(new BorderLayout(5, 5));
+
+        JPanel panelConfig = new JPanel(new GridLayout(8, 1, 5, 5));
+        panelConfig.setBorder(BorderFactory.createTitledBorder("Configuración"));
 
         panelConfig.add(new JLabel("IP de inicio:"));
         txtIpInicio = new JTextField("10.160.7.223");
@@ -52,11 +54,50 @@ public class InterfazScanner extends JFrame {
         txtTimeout = new JTextField("1000");
         panelConfig.add(txtTimeout);
 
-        panelConfig.add(new JLabel("Número de reintentos:"));
+        panelConfig.add(new JLabel("Reintentos:"));
         txtReintentos = new JTextField("1");
         panelConfig.add(txtReintentos);
 
-        add(panelConfig, BorderLayout.NORTH);
+        JPanel panelBotones = new JPanel(new GridLayout(5, 1, 5, 5));
+        panelBotones.setBorder(BorderFactory.createTitledBorder("Acciones"));
+
+        btnIniciar = new JButton("Iniciar escaneo");
+        btnDetener = new JButton("Detener escaneo");
+        btnLimpiar = new JButton("Limpiar");
+        btnGuardar = new JButton("Guardar resultados");
+        btnFiltrarActivos = new JButton("Mostrar solo activos");
+
+        btnDetener.setEnabled(false);
+
+        panelBotones.add(btnIniciar);
+        panelBotones.add(btnDetener);
+        panelBotones.add(btnLimpiar);
+        panelBotones.add(btnFiltrarActivos);
+        panelBotones.add(btnGuardar);
+
+        panelIzquierdo.add(panelConfig, BorderLayout.NORTH);
+        panelIzquierdo.add(panelBotones, BorderLayout.SOUTH);
+
+        add(panelIzquierdo, BorderLayout.WEST);
+
+        JPanel panelDerecho = new JPanel(new BorderLayout(5, 5));
+
+        JPanel panelEstado = new JPanel(new GridLayout(2, 1, 5, 5));
+        panelEstado.setBorder(BorderFactory.createTitledBorder("Estado"));
+
+        lblEstado = new JLabel("Estado: Esperando...", SwingConstants.CENTER);
+        lblEquiposActivos = new JLabel("Equipos activos: 0", SwingConstants.CENTER);
+        barraProgreso = new JProgressBar();
+        barraProgreso.setStringPainted(true);
+
+        JPanel panelInfo = new JPanel(new GridLayout(1, 2));
+        panelInfo.add(lblEstado);
+        panelInfo.add(lblEquiposActivos);
+
+        panelEstado.add(panelInfo);
+        panelEstado.add(barraProgreso);
+
+        panelDerecho.add(panelEstado, BorderLayout.NORTH);
 
         String[] columnas = {"IP", "Nombre equipo", "Activo", "Tiempo (ms)"};
         modeloTabla = new DefaultTableModel(columnas, 0) {
@@ -72,39 +113,9 @@ public class InterfazScanner extends JFrame {
             }
         };
         tablaResultados = new JTable(modeloTabla);
-        add(new JScrollPane(tablaResultados), BorderLayout.CENTER);
+        panelDerecho.add(new JScrollPane(tablaResultados), BorderLayout.CENTER);
 
-        JPanel panelInferior = new JPanel(new BorderLayout(5, 5));
-
-        JPanel panelEstado = new JPanel(new BorderLayout(5, 5));
-        barraProgreso = new JProgressBar();
-        barraProgreso.setStringPainted(true);
-        lblEstado = new JLabel("Estado: Esperando...", SwingConstants.CENTER);
-        lblEquiposActivos = new JLabel("Equipos activos: 0");
-
-        panelEstado.add(lblEstado, BorderLayout.NORTH);
-        panelEstado.add(barraProgreso, BorderLayout.CENTER);
-        panelEstado.add(lblEquiposActivos, BorderLayout.SOUTH);
-
-        JPanel panelBotones = new JPanel(new FlowLayout());
-        btnIniciar = new JButton("Iniciar escaneo");
-        btnDetener = new JButton("Detener escaneo");
-        btnLimpiar = new JButton("Limpiar");
-        btnGuardar = new JButton("Guardar resultados");
-        btnFiltrarActivos = new JButton("Mostrar solo activos");
-
-        btnDetener.setEnabled(false);
-
-        panelBotones.add(btnIniciar);
-        panelBotones.add(btnDetener);
-        panelBotones.add(btnLimpiar);
-        panelBotones.add(btnGuardar);
-        panelBotones.add(btnFiltrarActivos);
-
-        panelInferior.add(panelEstado, BorderLayout.NORTH);
-        panelInferior.add(panelBotones, BorderLayout.SOUTH);
-
-        add(panelInferior, BorderLayout.SOUTH);
+        add(panelDerecho, BorderLayout.CENTER);
 
         btnIniciar.addActionListener(e -> iniciarEscaneo());
         btnDetener.addActionListener(e -> detenerEscaneo());
