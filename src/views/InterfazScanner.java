@@ -264,4 +264,4 @@ public class InterfazScanner extends JFrame {
             }
         }
     }
-}
+} //Fin de la interfaz
